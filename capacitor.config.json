@@ -1,0 +1,15 @@
+{
+  "appId": "com.calorietrack.app",
+  "appName": "Calorie Track",
+  "webDir": "www",
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon",
+      "iconColor": "#527e26"
+    },
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#eaf3e7"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "calorie-track",
+  "version": "1.0.0",
+  "description": "Calorie Track Android App by Krishna Deshmukh",
+  "main": "index.html",
+  "scripts": {
+    "build": "node build_www.js",
+    "start": "python -m http.server 8080",
+    "cap:add": "node build_www.js && npx cap add android",
+    "cap:sync": "node build_www.js && npx cap sync",
+    "cap:open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/app": "^6.0.2",
+    "@capacitor/camera": "^6.1.2",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/filesystem": "^6.0.2",
+    "@capacitor/geolocation": "^6.1.1",
+    "@capacitor/haptics": "^6.0.2",
+    "@capacitor/local-notifications": "^6.1.1",
+    "@capacitor/preferences": "^6.0.3",
+    "@capacitor/push-notifications": "^6.0.3",
+    "@capacitor/share": "^6.0.3",
+    "@capacitor/status-bar": "^6.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0"
+  }
+}

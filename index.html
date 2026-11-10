@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#eaf3e7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Calorie Track">
+  <meta name="description" content="Calorie Track: Your Calorie Counter - Built by Krishna Deshmukh">
+
+  <title>Calorie Track: Calorie Counter</title>
+
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div id="app-root">
+
+    <!-- ====================================================================
+         0. ANIMATED LAUNCH SPLASH
+         ==================================================================== -->
+    <div id="screen-splash">
+      <div class="splash-brand-wrap">
+        <img src="icons/icon-192.png" alt="Calorie Track" class="splash-logo-img">
+        <h1 class="splash-title">Calorie Track</h1>
+        <p class="splash-sub">Your Calorie Counter</p>
+      </div>
+    </div>
+
+    <!-- Notification Explainer Modal -->
+    <div id="modal-notif-permission" class="sage-modal-overlay hidden">
+      <div class="sage-modal-card text-center" style="max-width:340px;">
+        <div style="font-size:2.4rem; margin-bottom:8px;">🔔</div>
+        <h3 style="font-size:1.25rem; font-weight:800; color:var(--text-dark); margin-bottom:8px;">Enable Reminders</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.4; margin-bottom:20px;">
+          Calorie Track sends timely breakfast, lunch, and dinner reminders so you never forget to log your nutrition and stay on track.
+        </p>
+        <button id="btn-allow-notif" class="btn-primary-green" type="button" style="margin-bottom:8px;">
+          Enable Notifications
+        </button>
+        <button id="btn-skip-notif" class="btn-primary-green" type="button" style="background:#f0f5ee; color:var(--text-muted); box-shadow:none;">
+          Maybe Later
+        </button>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         1. ONBOARDING & WELCOME SCREEN
+         ==================================================================== -->
+    <div id="screen-welcome" class="auth-screen">
+      <div style="width:100%; display:flex; flex-direction:column; align-items:center;">
+        <div class="zencalorie-brand">
+          <img src="icons/icon-192.png" alt="Calorie Track Logo" class="zencalorie-logo-img">
+          <h1>Calorie Track</h1>
+          <p>Your Calorie Counter</p>
+        </div>
+
+        <div class="feature-pills-list">
+          <div class="feature-pill-card">
+            <span class="icon">✨</span>
+            <span>Food & exercise logging with AI</span>
+          </div>
+          <div class="feature-pill-card">
+            <span class="icon">📊</span>
+            <span>Track calories & macros</span>
+          </div>
+          <div class="feature-pill-card">
+            <span class="icon">💊</span>
+            <span>Vitamins & minerals tracking</span>
+          </div>
+          <div class="feature-pill-card">
+            <span class="icon">🧪</span>
+            <span>Weight & hydration tracking</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:100%; display:flex; flex-direction:column; align-items:center;">
+        <button id="btn-welcome-start" class="btn-primary-green" type="button">
+          Try For Free
+        </button>
+        <p class="auth-footer-link" id="link-welcome-login">
+          Already have an account? <span>Login</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         ONBOARDING STEP 1: TELL US ABOUT YOURSELF
+         ==================================================================== -->
+    <div id="screen-onboarding-step1" class="auth-screen hidden">
+      <div class="auth-header-bar">
+        <button class="back-btn" id="btn-step1-back" type="button">&#8592;</button>
+        <div class="onboarding-progress-dots" style="margin:0 auto; padding-right:32px;">
+          <div class="progress-dot active"></div>
+          <div class="progress-dot"></div>
+        </div>
+      </div>
+
+      <div style="width:100%; max-width:380px;">
+        <h2 style="font-size:1.6rem; font-weight:800; color:var(--text-dark); margin-bottom:4px;">Tell us about yourself</h2>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">We'll use this to work out your daily calories.</p>
+
+        <div class="auth-form-card">
+          <!-- Height with cm | ft/in toggle -->
+          <div class="input-field-group">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <label class="input-field-label" style="margin:0;">Height</label>
+              <div class="unit-toggle-pill" id="step1-height-toggle">
+                <button type="button" class="unit-toggle-btn active" data-unit="cm">cm</button>
+                <button type="button" class="unit-toggle-btn" data-unit="ftin">ft / in</button>
+              </div>
+            </div>
+            <input type="number" id="ob-height" class="pill-input" placeholder="170" value="170" inputmode="decimal">
+          </div>
+
+          <!-- Weight with kg | lb toggle -->
+          <div class="input-field-group">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <label class="input-field-label" style="margin:0;">Weight</label>
+              <div class="unit-toggle-pill" id="step1-weight-toggle">
+                <button type="button" class="unit-toggle-btn active" data-unit="kg">kg</button>
+                <button type="button" class="unit-toggle-btn" data-unit="lb">lb</button>
+              </div>
+            </div>
+            <input type="number" id="ob-weight" class="pill-input" placeholder="65" value="65" inputmode="decimal">
+          </div>
+
+          <!-- Age and Gender row -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div class="input-field-group">
+              <label class="input-field-label">Age</label>
+              <input type="number" id="ob-age" class="pill-input" placeholder="21" value="21" inputmode="numeric">
+            </div>
+            <div class="input-field-group">
+              <label class="input-field-label">Gender</label>
+              <div class="unit-toggle-pill" id="step1-gender-toggle" style="width:100%; justify-content:center; padding:3px; height:46px; align-items:center;">
+                <button type="button" class="unit-toggle-btn active" data-gender="male" style="flex:1; height:38px;">Male</button>
+                <button type="button" class="unit-toggle-btn" data-gender="female" style="flex:1; height:38px;">Female</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Level Trigger -->
+          <div class="input-field-group">
+            <label class="input-field-label">Activity Level</label>
+            <div class="activity-level-trigger" id="btn-trigger-activity-sheet">
+              <span id="ob-activity-display-label">Moderate</span>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <p style="font-size:0.78rem; color:var(--text-muted); margin-top:6px; line-height:1.35;">
+              Daily life only &mdash; don't include workouts. Log them in the app and we'll add those calories.
+            </p>
+          </div>
+
+          <button id="btn-onboarding-next" class="btn-primary-green mt-2" type="button">
+            Next
+          </button>
+          <button id="btn-onboarding-skip" class="btn-primary-green mt-2" type="button" style="background:transparent; color:var(--text-muted); box-shadow:none; font-size:0.88rem;">
+            Skip for now &mdash; use standard estimates
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         ONBOARDING STEP 2: WHAT'S YOUR GOAL?
+         ==================================================================== -->
+    <div id="screen-onboarding-step2" class="auth-screen hidden">
+      <div class="auth-header-bar">
+        <button class="back-btn" id="btn-step2-back" type="button">&#8592;</button>
+        <div class="onboarding-progress-dots" style="margin:0 auto; padding-right:32px;">
+          <div class="progress-dot completed"></div>
+          <div class="progress-dot active"></div>
+        </div>
+      </div>
+
+      <div style="width:100%; max-width:380px;">
+        <h2 style="font-size:1.6rem; font-weight:800; color:var(--text-dark); margin-bottom:4px;">What's your goal?</h2>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">We'll set your daily calories to suit it.</p>
+
+        <!-- Goal Cards -->
+        <div class="goal-select-card" data-goal="lose">
+          <div class="goal-card-radio"></div>
+          <div class="goal-card-info">
+            <div class="goal-card-title">🍃 Lose Weight</div>
+            <div class="goal-card-sub">300 kcal below what your body uses</div>
+          </div>
+        </div>
+
+        <div class="goal-select-card selected" data-goal="maintain">
+          <div class="goal-card-radio"></div>
+          <div class="goal-card-info">
+            <div class="goal-card-title">⚖️ Maintain</div>
+            <div class="goal-card-sub">Keep your current weight</div>
+          </div>
+        </div>
+
+        <div class="goal-select-card" data-goal="gain">
+          <div class="goal-card-radio"></div>
+          <div class="goal-card-info">
+            <div class="goal-card-title">📈 Gain Weight</div>
+            <div class="goal-card-sub">300 kcal above what your body uses</div>
+          </div>
+        </div>
+
+        <!-- Live Calculation Result Card -->
+        <div class="live-goal-result-card">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Your Daily Target</div>
+          <div class="live-cals-big" id="ob-live-cals">2,100 kcal</div>
+          <div class="live-macros-row">
+            <div><span style="color:var(--carb-blue);" id="ob-live-carbs">263g</span> Carbs</div>
+            <div><span style="color:var(--protein-maroon);" id="ob-live-protein">131g</span> Protein</div>
+            <div><span style="color:var(--fat-orange);" id="ob-live-fat">58g</span> Fat</div>
+          </div>
+        </div>
+
+        <button id="btn-onboarding-finish" class="btn-primary-green mt-3" type="button">
+          Start tracking
+        </button>
+      </div>
+    </div>
+
+    <!-- Activity Level Bottom Sheet Modal -->
+    <div id="sheet-activity-level" class="bottom-sheet-backdrop">
+      <div class="bottom-sheet-modal">
+        <div class="bottom-sheet-handle"></div>
+        <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-dark); margin-bottom:14px;">Select Activity Level</h3>
+
+        <div class="activity-option-row" data-level="1.2" data-name="Sedentary">
+          <div>
+            <div class="activity-option-title">Sedentary</div>
+            <div class="activity-option-desc">Mostly sitting throughout the day</div>
+          </div>
+          <span class="activity-option-check">&#10003;</span>
+        </div>
+
+        <div class="activity-option-row" data-level="1.375" data-name="Light">
+          <div>
+            <div class="activity-option-title">Light</div>
+            <div class="activity-option-desc">On your feet part of the day</div>
+          </div>
+          <span class="activity-option-check">&#10003;</span>
+        </div>
+
+        <div class="activity-option-row selected" data-level="1.55" data-name="Moderate">
+          <div>
+            <div class="activity-option-title">Moderate</div>
+            <div class="activity-option-desc">Moderate daily movement or exercise</div>
+          </div>
+          <span class="activity-option-check">&#10003;</span>
+        </div>
+
+        <div class="activity-option-row" data-level="1.725" data-name="Active">
+          <div>
+            <div class="activity-option-title">Active</div>
+            <div class="activity-option-desc">Physical work or active daily routine</div>
+          </div>
+          <span class="activity-option-check">&#10003;</span>
+        </div>
+
+        <div class="activity-option-row" data-level="1.9" data-name="Very Active">
+          <div>
+            <div class="activity-option-title">Very active</div>
+            <div class="activity-option-desc">Very hard physical work or athletic labor</div>
+          </div>
+          <span class="activity-option-check">&#10003;</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ====================================================================
+         2. AUTH SCREEN: LOGIN / SIGNUP MODAL
+         ==================================================================== -->
+    <div id="screen-auth-form" class="auth-screen hidden">
+      <div class="auth-header-bar">
+        <button class="back-btn" id="btn-auth-back" type="button">&#8592;</button>
+      </div>
+
+      <div style="width:100%; max-width:380px;">
+        <div class="zencalorie-brand" style="margin-bottom:20px;">
+          <img src="icons/icon-192.png" alt="Calorie Track Logo" class="zencalorie-logo-img" style="width:72px; height:72px;">
+          <h1 style="font-size:1.6rem;">Calorie Track</h1>
+          <p id="auth-title-sub">Your Calorie Counter</p>
+        </div>
+
+        <!-- Google One-Tap Quick Sign-In -->
+        <button id="btn-google-auth" class="btn-primary-green" style="background:#ffffff; color:#222; border:1px solid #d0ded0; box-shadow:var(--shadow-sm); margin-bottom:14px; display:flex; align-items:center; justify-content:center; gap:10px;" type="button">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <div style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin: 8px 0 14px 0;">&mdash; or email &mdash;</div>
+
+        <!-- Form fields -->
+        <div class="auth-form-card">
+          <div class="pill-input-wrapper" id="auth-name-wrapper">
+            <input type="text" id="auth-input-name" class="pill-input" placeholder="Full Name" value="Krishna Deshmukh">
+          </div>
+
+          <div class="pill-input-wrapper">
+            <input type="email" id="auth-input-email" class="pill-input" placeholder="Email">
+          </div>
+
+          <div class="pill-input-wrapper">
+            <input type="password" id="auth-input-password" class="pill-input" placeholder="Password">
+            <button type="button" class="pill-input-eye" onclick="togglePassVisibility('auth-input-password')">&#128065;</button>
+          </div>
+
+          <div id="auth-forgot-row" class="hidden" style="text-align:right; margin-top:-4px; margin-bottom:12px; padding-right:4px;">
+            <a href="#" id="link-forgot-pass" style="color:var(--primary-green); font-size:0.85rem; font-weight:600; text-decoration:none;">Forgot password?</a>
+          </div>
+
+          <div class="pill-input-wrapper" id="auth-confirm-wrapper">
+            <input type="password" id="auth-input-confirm" class="pill-input" placeholder="Confirm Password">
+            <button type="button" class="pill-input-eye" onclick="togglePassVisibility('auth-input-confirm')">&#128065;</button>
+          </div>
+
+          <button id="btn-auth-submit" class="btn-primary-green mt-2" type="button">
+            Signup & Start Free Trial
+          </button>
+        </div>
+      </div>
+
+      <p class="auth-footer-link" id="auth-toggle-mode">
+        Already have an account? <span>Login</span>
+      </p>
+    </div>
+
+
+    <!-- ====================================================================
+         3. MAIN APP SHELL (DASHBOARD)
+         ==================================================================== -->
+    <div id="screen-main-dashboard" class="hidden" style="display:flex; flex-direction:column; min-height:100vh;">
+
+      <!-- Top Header -->
+      <header class="zen-header">
+        <button class="zen-menu-btn" id="btn-open-drawer" title="Menu" aria-label="Open Navigation Drawer">&#9776;</button>
+
+        <!-- Dropdown Date Title -->
+        <div class="zen-date-trigger" id="btn-toggle-calendar">
+          <span id="label-current-day-text">Today</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+
+        <!-- Streak Button -->
+        <button class="zen-streak-trigger" id="btn-open-streak" title="Streak & Logged Days">
+          <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+      </header>
+
+      <!-- Calendar Strip & Expandable Month View -->
+      <div class="zen-calendar-card">
+        <div class="week-strip-days" id="week-strip-container">
+          <!-- Populated by JS: M, T, W, T, F, S, S -->
+        </div>
+
+        <!-- Expandable Month Calendar -->
+        <div class="month-calendar-expand" id="month-calendar-dropdown">
+          <div class="month-pills-row" id="month-pills-selector">
+            <button type="button" class="month-pill-btn" data-m="6">Jul</button>
+            <button type="button" class="month-pill-btn" data-m="7">Aug</button>
+            <button type="button" class="month-pill-btn" data-m="8">Sep</button>
+            <button type="button" class="month-pill-btn" data-m="9">Oct</button>
+            <button type="button" class="month-pill-btn active" data-m="10">Nov</button>
+            <button type="button" class="month-pill-btn" data-m="11">Dec</button>
+          </div>
+          <div class="month-days-matrix" id="month-days-matrix-grid">
+            <!-- 7x5 Days matrix -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Scrollable Feed -->
+      <main class="zen-content-scroll">
+
+        <!-- CALORIES CARD -->
+        <div class="zen-card" id="card-calories">
+          <div class="zen-card-header" id="header-collapse-calories">
+            <span class="zen-card-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+              <span>Calories</span>
+              <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+            </span>
+            <span class="header-collapsed-summary" id="badge-collapsed-calories">0 / 2,100 kcal</span>
+            <div class="zen-card-goal-link" id="link-edit-goal">
+              <span>Goal: <span id="dash-goal-num">2,100</span> kcal</span>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          <div class="zen-stats-row">
+            <div class="stat-item-col">
+              <span class="stat-val-green" id="dash-food-cals">0</span>
+              <span class="stat-label-muted">Food</span>
+            </div>
+            <div class="stat-item-col">
+              <span class="stat-val-green" id="dash-exercise-cals">0</span>
+              <span class="stat-label-muted">Exercise</span>
+            </div>
+            <div class="stat-item-col">
+              <span class="stat-val-green" id="dash-remaining-cals">2,100</span>
+              <span class="stat-label-muted">Remaining</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MACROS CARD -->
+        <div class="zen-card" id="card-macros">
+          <div class="zen-card-header" id="header-collapse-macros">
+            <span class="zen-card-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+              <span>Macros</span>
+              <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+            </span>
+            <span class="header-collapsed-summary" id="badge-collapsed-macros">C 0g P 0g F 0g</span>
+          </div>
+
+          <!-- 3 Circular Gauge Rings -->
+          <div class="macros-gauges-row">
+            <!-- Carbs -->
+            <div class="gauge-item">
+              <div class="gauge-svg-wrap">
+                <svg class="gauge-svg" viewBox="0 0 72 72">
+                  <circle class="gauge-bg" cx="36" cy="36" r="30" stroke-width="6" fill="none"/>
+                  <circle class="gauge-fill-carb" id="ring-carbs" cx="36" cy="36" r="30" stroke-width="6" fill="none"
+                          stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+                </svg>
+              </div>
+              <div class="macro-fraction-label carb" id="label-carbs-fraction">0<span>/263</span></div>
+              <div class="macro-name-label">Carbs (g)</div>
+            </div>
+
+            <!-- Protein -->
+            <div class="gauge-item">
+              <div class="gauge-svg-wrap">
+                <svg class="gauge-svg" viewBox="0 0 72 72">
+                  <circle class="gauge-bg" cx="36" cy="36" r="30" stroke-width="6" fill="none"/>
+                  <circle class="gauge-fill-protein" id="ring-protein" cx="36" cy="36" r="30" stroke-width="6" fill="none"
+                          stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+                </svg>
+              </div>
+              <div class="macro-fraction-label protein" id="label-protein-fraction">0<span>/131</span></div>
+              <div class="macro-name-label">Protein (g)</div>
+            </div>
+
+            <!-- Fat -->
+            <div class="gauge-item">
+              <div class="gauge-svg-wrap">
+                <svg class="gauge-svg" viewBox="0 0 72 72">
+                  <circle class="gauge-bg" cx="36" cy="36" r="30" stroke-width="6" fill="none"/>
+                  <circle class="gauge-fill-fat" id="ring-fat" cx="36" cy="36" r="30" stroke-width="6" fill="none"
+                          stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+                </svg>
+              </div>
+              <div class="macro-fraction-label fat" id="label-fat-fraction">0<span>/58</span></div>
+              <div class="macro-name-label">Fat (g)</div>
+            </div>
+          </div>
+
+          <div class="view-nutrition-link" id="btn-open-nutrition-modal">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span>View Full Nutrition</span>
+          </div>
+        </div>
+
+        <!-- WATER DASHBOARD CARD (Conditionally Enabled) -->
+        <div class="zen-card hidden" id="card-water-dash">
+          <div class="zen-card-header" id="header-collapse-water">
+            <span class="zen-card-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              <span>Water</span>
+              <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+            </span>
+            <span class="header-collapsed-summary" id="badge-collapsed-water">0 / 8 glasses</span>
+          </div>
+          <div class="zen-stats-row water-stepper-row" style="align-items:center; justify-content:space-between; padding:4px 10px;">
+            <div style="display:flex; align-items:baseline; gap:8px;">
+              <span class="stat-val-green" id="dash-water-val" style="font-size:1.6rem;">0</span>
+              <span class="stat-label-muted">/ <span id="dash-water-goal">8</span> <span id="dash-water-unit">glasses</span></span>
+            </div>
+            <button id="btn-dash-water-add" class="btn-primary-green" style="width:auto; padding:8px 18px; border-radius:var(--radius-pill); font-size:0.9rem;" type="button">
+              + 1 Glass
+            </button>
+          </div>
+        </div>
+
+        <!-- ACTIVITY FEED TITLE -->
+        <h3 class="zen-section-title">Activity</h3>
+
+        <!-- Meals Container (Dynamic) -->
+        <div id="activity-feed-container">
+          <div class="empty-feed-card">
+            Nothing logged for this day. Describe a meal or workout below to start.
+          </div>
+        </div>
+
+      </main>
+
+      <!-- FLOATING BOTTOM BAR -->
+      <div class="floating-bottom-bar-wrap">
+        <div class="floating-input-pill">
+          <input type="text" id="bottom-pill-input" class="pill-inline-input" placeholder="What did you eat or exercise?" autocomplete="off">
+          <div class="input-pill-icons">
+            <button class="pill-action-icon" id="btn-trigger-bookmark" title="Saved Prompts" type="button">&#128278;</button>
+            <button class="pill-action-icon" id="btn-trigger-gallery" title="Gallery Photo" type="button">&#128444;&#65039;</button>
+            <button class="pill-action-icon" id="btn-trigger-camera" title="Camera Photo" type="button">&#128247;</button>
+            <button class="pill-send-btn hidden" id="btn-bottom-send" title="Send" type="button">&#10148;</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ====================================================================
+         4. SLIDE-IN HAMBURGER DRAWER MENU
+         ==================================================================== -->
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <aside class="drawer-panel" id="drawer-panel">
+      <!-- Profile Card -->
+      <div class="drawer-profile-card">
+        <img src="icons/icon-192.png" alt="Logo" class="drawer-avatar-icon">
+        <div class="drawer-profile-info">
+          <div class="drawer-user-name" id="drawer-display-name">Krishna Deshmukh</div>
+          <div class="drawer-user-sub" id="drawer-display-email">krishna@example.com</div>
+        </div>
+        <span class="drawer-badge-pill">&#9889; 4/6 Free</span>
+      </div>
+
+      <!-- Upgrade banner -->
+      <div class="drawer-premium-card" id="btn-drawer-portfolio">
+        <div class="drawer-premium-title">✨ Built by Krishna Deshmukh</div>
+        <div class="drawer-premium-sub">Placement Project &bull; Unlimited AI food logging</div>
+      </div>
+
+      <!-- Navigation links -->
+      <div class="drawer-nav-list">
+        <button class="drawer-nav-item active" data-target="dashboard">
+          <span class="icon">&#127968;</span>
+          <span>Dashboard</span>
+        </button>
+        <button class="drawer-nav-item" data-target="trackers">
+          <span class="icon">&#8862;</span>
+          <span>Trackers</span>
+        </button>
+        <button class="drawer-nav-item" data-target="water">
+          <span class="icon">&#128300;</span>
+          <span>Water Tracker</span>
+        </button>
+        <button class="drawer-nav-item" data-target="profile">
+          <span class="icon">&#128100;</span>
+          <span>My Profile</span>
+        </button>
+        <button class="drawer-nav-item" data-target="reminders">
+          <span class="icon">&#128276;</span>
+          <span>Reminders</span>
+        </button>
+        <button class="drawer-nav-item" data-target="summary">
+          <span class="icon">&#128197;</span>
+          <span>Weekly Summary</span>
+        </button>
+        <button class="drawer-nav-item" data-target="streak">
+          <span class="icon">&#9889;</span>
+          <span>Streak</span>
+        </button>
+
+        <div class="drawer-divider"></div>
+
+        <button class="drawer-nav-item" data-target="settings">
+          <span class="icon">&#9881;&#65039;</span>
+          <span>Settings</span>
+        </button>
+        <button class="drawer-nav-item" data-target="subscription">
+          <span class="icon">&#11088;</span>
+          <span>Subscription</span>
+        </button>
+        <button class="drawer-nav-item" id="btn-drawer-logout" style="color:var(--danger-red);">
+          <span class="icon" style="color:var(--danger-red);">&#10060;</span>
+          <span>Log Out</span>
+        </button>
+      </div>
+    </aside>
+
+
+    <!-- ====================================================================
+         5. SUBPAGE: TRACKERS GRID (2x4 Grid from Screenshot)
+         ==================================================================== -->
+    <div id="subpage-trackers" class="zen-subpage">
+      <div class="subpage-top-bar">
+        <button class="back-btn btn-close-subpage">&#8592;</button>
+        <h2 class="subpage-title">Trackers</h2>
+        <div style="width:36px;"></div>
+      </div>
+
+      <div class="trackers-2col-grid">
+        <!-- Sleep -->
+        <div class="tracker-tile-card" data-action="sleep">
+          <span class="tracker-tile-icon">🌙</span>
+          <span class="tracker-tile-title">Sleep</span>
+          <span class="tracker-tile-sub" id="tile-sub-sleep">Add last night</span>
+        </div>
+
+        <!-- Mood -->
+        <div class="tracker-tile-card" data-action="mood">
+          <span class="tracker-tile-icon">🙂</span>
+          <span class="tracker-tile-title">Mood</span>
+          <span class="tracker-tile-sub">How are you today?</span>
+        </div>
+
+        <!-- Fasting -->
+        <div class="tracker-tile-card" data-action="fasting">
+          <span class="tracker-tile-icon">⏱️</span>
+          <span class="tracker-tile-title">Fasting</span>
+          <span class="tracker-tile-sub" id="tile-sub-fasting">Start a fast</span>
+        </div>
+
+        <!-- Protein -->
+        <div class="tracker-tile-card" data-action="protein">
+          <span class="tracker-tile-icon">💪</span>
+          <span class="tracker-tile-title">Protein</span>
+          <span class="tracker-tile-sub" id="tile-sub-protein">Goal 131 g</span>
+        </div>
+
+        <!-- Nutrition -->
+        <div class="tracker-tile-card" data-action="nutrition">
+          <span class="tracker-tile-icon">🥦</span>
+          <span class="tracker-tile-title">Nutrition</span>
+          <span class="tracker-tile-sub">Fiber, iron, any nutrient</span>
+        </div>
+
+        <!-- Screen Time -->
+        <div class="tracker-tile-card" data-action="screentime">
+          <span class="tracker-tile-icon">📱</span>
+          <span class="tracker-tile-title">Screen Time</span>
+          <span class="tracker-tile-sub">Add yesterday's hours</span>
+        </div>
+
+        <!-- Water -->
+        <div class="tracker-tile-card" data-action="water">
+          <span class="tracker-tile-icon">💧</span>
+          <span class="tracker-tile-title">Water</span>
+          <span class="tracker-tile-sub" id="tile-sub-water">0 ml</span>
+        </div>
+
+        <!-- Weight -->
+        <div class="tracker-tile-card" data-action="weight">
+          <span class="tracker-tile-icon">⚖️</span>
+          <span class="tracker-tile-title">Weight</span>
+          <span class="tracker-tile-sub" id="tile-sub-weight">Log your weight</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ====================================================================
+         6. SUBPAGE: MY PROFILE (Exact Zencalorie Form & MSJ Goals)
+         ==================================================================== -->
+    <div id="subpage-profile" class="zen-subpage">
+      <div class="subpage-top-bar">
+        <button class="back-btn btn-close-subpage">&#8592;</button>
+        <h2 class="subpage-title">My Profile</h2>
+        <div style="width:36px;"></div>
+      </div>
+
+      <!-- Account Info Card -->
+      <div class="profile-section-card">
+        <div class="profile-section-title">Account Information</div>
+        <div class="input-field-group">
+          <label class="input-field-label">Full Name</label>
+          <input type="text" id="prof-name" class="sage-pill-input" value="Krishna Deshmukh">
+        </div>
+        <div class="input-field-group">
+          <label class="input-field-label">Email Address</label>
+          <input type="email" id="prof-email" class="sage-pill-input" value="krishnadeshmukh721@gmail.com" readonly>
+        </div>
+      </div>
+
+      <!-- Physical Profile Card -->
+      <div class="profile-section-card">
+        <div class="profile-section-title">Physical Profile</div>
+
+        <!-- Height -->
+        <div class="input-field-group">
+          <div class="input-field-label">
+            <span>Height</span>
+            <div class="pill-toggle-control" id="toggle-height-unit">
+              <button type="button" class="pill-toggle-btn active" data-unit="cm">cm</button>
+              <button type="button" class="pill-toggle-btn" data-unit="ftin">ft / in</button>
+            </div>
+          </div>
+          <input type="number" id="prof-height" class="sage-pill-input" value="174.00" step="0.5">
+        </div>
+
+        <!-- Weight -->
+        <div class="input-field-group">
+          <div class="input-field-label">
+            <span>Weight</span>
+            <div class="pill-toggle-control" id="toggle-weight-unit">
+              <button type="button" class="pill-toggle-btn active" data-unit="kg">kg</button>
+              <button type="button" class="pill-toggle-btn" data-unit="lb">lb</button>
+            </div>
+          </div>
+          <input type="number" id="prof-weight" class="sage-pill-input" value="88.00" step="0.1">
+        </div>
+
+        <!-- Age & Gender -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="input-field-group">
+            <label class="input-field-label">Age</label>
+            <input type="number" id="prof-age" class="sage-pill-input" value="25">
+          </div>
+          <div class="input-field-group">
+            <label class="input-field-label">Gender</label>
+            <div class="pill-toggle-control" id="toggle-gender" style="height:48px; align-items:center;">
+              <button type="button" class="pill-toggle-btn active" data-gender="male" style="flex:1; height:38px;">Male</button>
+              <button type="button" class="pill-toggle-btn" data-gender="female" style="flex:1; height:38px;">Female</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Level Dropdown -->
+        <div class="input-field-group">
+          <label class="input-field-label">Activity Level</label>
+          <select id="prof-activity" class="sage-pill-input" style="cursor:pointer;">
+            <option value="1.2">Sedentary (desk job, little exercise)</option>
+            <option value="1.375">Lightly Active (1-3 days/week)</option>
+            <option value="1.55" selected>Active / Moderate (3-5 days/week)</option>
+            <option value="1.725">Very Active (6-7 days/week)</option>
+            <option value="1.9">Extra Active (intense training & job)</option>
+          </select>
+        </div>
+
+        <!-- Goal Dropdown -->
+        <div class="input-field-group">
+          <label class="input-field-label">Goal</label>
+          <select id="prof-goal" class="sage-pill-input" style="cursor:pointer;">
+            <option value="lose">Weight Loss (-500 kcal)</option>
+            <option value="maintain" selected>Maintain (TDEE)</option>
+            <option value="gain">Weight Gain (+350 kcal)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Daily Goals Card (Auto-updated via Mifflin-St Jeor) -->
+      <div class="profile-section-card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+          <span class="profile-section-title" style="margin-bottom:0;">Daily Goals</span>
+          <span class="drawer-badge-pill" style="font-size:0.75rem;">Auto-updated</span>
+        </div>
+
+        <div class="sage-callout-box">
+          <div class="callout-bold-title" id="prof-recommended-text">Recommended for you: 2,100 kcal/day</div>
+          <div class="callout-sub-desc">Changes automatically when you edit height, weight, age, gender, activity level or goal above.</div>
+        </div>
+
+        <div class="input-field-group">
+          <label class="input-field-label">Daily Calories (kcal)</label>
+          <input type="number" id="prof-daily-cals" class="sage-pill-input" value="2100" style="color:var(--primary-green); font-size:1.1rem;">
+        </div>
+
+        <div style="margin-top:14px;">
+          <div class="input-field-label">
+            <span>Macro Split</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Total: 100%</span>
+          </div>
+
+          <div class="macro-split-slider-row">
+            <div class="macro-dot-name">
+              <span class="color-dot" style="background:var(--accent-carb);"></span>
+              <span>Carbohydrates</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="number" id="prof-macro-c" class="macro-input-pill" value="50">
+              <span style="font-size:0.8rem; color:var(--text-muted);">%</span>
+              <span id="prof-grams-c" style="font-size:0.85rem; font-weight:700; min-width:44px; text-align:right;">263g</span>
+            </div>
+          </div>
+
+          <div class="macro-split-slider-row">
+            <div class="macro-dot-name">
+              <span class="color-dot" style="background:var(--accent-protein);"></span>
+              <span>Protein</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="number" id="prof-macro-p" class="macro-input-pill" value="25">
+              <span style="font-size:0.8rem; color:var(--text-muted);">%</span>
+              <span id="prof-grams-p" style="font-size:0.85rem; font-weight:700; min-width:44px; text-align:right;">131g</span>
+            </div>
+          </div>
+
+          <div class="macro-split-slider-row">
+            <div class="macro-dot-name">
+              <span class="color-dot" style="background:var(--accent-fat);"></span>
+              <span>Fat</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="number" id="prof-macro-f" class="macro-input-pill" value="25">
+              <span style="font-size:0.8rem; color:var(--text-muted);">%</span>
+              <span id="prof-grams-f" style="font-size:0.85rem; font-weight:700; min-width:44px; text-align:right;">58g</span>
+            </div>
+          </div>
+        </div>
+
+        <button id="btn-save-profile" class="btn-primary-green mt-4" type="button">
+          Save Profile
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ====================================================================
+         7. SUBPAGE: STREAK & LOGGED DAYS (Exact Zencalorie Screenshot)
+         ==================================================================== -->
+    <div id="subpage-streak" class="zen-subpage">
+      <div class="subpage-top-bar">
+        <button class="back-btn btn-close-subpage">&#8592;</button>
+        <h2 class="subpage-title">Streak</h2>
+        <div style="width:36px;"></div>
+      </div>
+
+      <div class="profile-section-card">
+        <div style="display:flex; align-items:center; gap:6px; font-size:1rem; font-weight:800; color:var(--primary-green); margin-bottom:14px;">
+          <span>🔥</span> Logged Days
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; text-align:center;">
+          <div style="border-right:1px solid #edf4eb;">
+            <div class="stat-val-green" id="streak-current-val" style="color:var(--accent-orange); font-size:2.4rem;">0</div>
+            <div class="stat-label-muted">Current Streak</div>
+          </div>
+          <div>
+            <div class="stat-val-green" id="streak-longest-val" style="color:var(--accent-orange); font-size:2.4rem;">0</div>
+            <div class="stat-label-muted">Longest Streak</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-section-card">
+        <div class="profile-section-title">This Week</div>
+        <div class="week-strip-days" id="streak-week-strip" style="margin:10px 0 16px 0;">
+          <!-- Populated by JS -->
+        </div>
+        <div style="text-align:center;">
+          <span style="font-size:0.9rem; font-weight:800; color:var(--primary-green); cursor:pointer;" id="link-streak-summary">View Weekly Summary</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ====================================================================
+         8. SUBPAGE: REMINDERS (Exact Zencalorie Screenshot)
+         ==================================================================== -->
+    <div id="subpage-reminders" class="zen-subpage">
+      <div class="subpage-top-bar">
+        <button class="back-btn btn-close-subpage">&#8592;</button>
+        <h2 class="subpage-title">Reminders</h2>
+        <div style="width:36px;"></div>
+      </div>
+
+      <div style="padding:0 20px 10px 20px; font-size:0.86rem; color:var(--text-secondary);">
+        Enable reminders to stay consistent with your daily food logging. Tap a time to change it.
+      </div>
+
+      <div class="profile-section-card">
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:10px; border-bottom:1px solid #f0f6ee;">
+            <div>
+              <div style="font-size:0.95rem; font-weight:800;">Morning</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">9:00 AM</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <input type="checkbox" checked style="width:20px; height:20px; accent-color:var(--primary-green);">
+              <span style="cursor:pointer; color:var(--text-muted);">&#128465;</span>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:10px; border-bottom:1px solid #f0f6ee;">
+            <div>
+              <div style="font-size:0.95rem; font-weight:800;">Afternoon</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">1:00 PM</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <input type="checkbox" checked style="width:20px; height:20px; accent-color:var(--primary-green);">
+              <span style="cursor:pointer; color:var(--text-muted);">&#128465;</span>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div>
+              <div style="font-size:0.95rem; font-weight:800;">Evening</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">7:00 PM</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <input type="checkbox" checked style="width:20px; height:20px; accent-color:var(--primary-green);">
+              <span style="cursor:pointer; color:var(--text-muted);">&#128465;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin:0 16px;">
+        <button class="btn-primary-green" id="btn-add-custom-reminder" style="background:transparent; color:var(--primary-green); border:2px dashed var(--primary-green); box-shadow:none;">
+          + Add custom time
+        </button>
+      </div>
+
+      <div style="text-align:center; margin-top:20px;">
+        <span style="font-size:0.88rem; font-weight:700; color:var(--primary-green); cursor:pointer;" id="btn-test-notification">Send a test notification</span>
+      </div>
+    </div>
+
+
+    <!-- ====================================================================
+         SUBPAGE: WEEKLY SUMMARY
+         ==================================================================== -->
+    <div id="subpage-summary" class="zen-subpage">
+      <div class="subpage-top-bar">
+        <button class="back-btn btn-close-subpage">&#8592;</button>
+        <h2 class="subpage-title">Weekly Summary</h2>
+        <div style="width:36px;"></div>
+      </div>
+
+      <div style="padding:0 16px; margin-bottom:14px;">
+        <div class="month-pills-row" id="summary-period-tabs">
+          <button type="button" class="month-pill-btn active" data-period="0">This week</button>
+          <button type="button" class="month-pill-btn" data-period="1">Last week</button>
+          <button type="button" class="month-pill-btn" data-period="2">2 weeks ago</button>
+          <button type="button" class="month-pill-btn" data-period="3">3 weeks ago</button>
+          <button type="button" class="month-pill-btn" data-period="month">Monthly</button>
+        </div>
+      </div>
+
+      <div style="padding:0 16px;">
+        <div id="summary-date-range-label" style="font-weight:700; color:var(--text-muted); font-size:0.88rem; margin-bottom:12px;"></div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+          <div class="profile-section-card" style="margin:0; text-align:center; padding:14px;">
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">AVG DAILY CALORIES</div>
+            <div id="sum-avg-cals" style="font-size:1.6rem; font-weight:800; color:var(--primary-green); margin-top:4px;">0</div>
+          </div>
+          <div class="profile-section-card" style="margin:0; text-align:center; padding:14px;">
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">DAYS TRACKED</div>
+            <div id="sum-days-tracked" style="font-size:1.6rem; font-weight:800; color:#0284c7; margin-top:4px;">0 / 7</div>
+          </div>
+        </div>
+
+        <div class="profile-section-card" style="margin-bottom:16px;">
+          <div class="profile-section-title">Weekly Totals</div>
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; text-align:center; margin-top:10px;">
+            <div style="background:#f4f9f2; padding:8px 4px; border-radius:10px;">
+              <div style="font-size:0.65rem; color:var(--text-muted); font-weight:700;">CALORIES</div>
+              <div id="sum-total-cals" style="font-weight:800; font-size:0.95rem; color:var(--primary-green);">0</div>
+            </div>
+            <div style="background:#f4f9f2; padding:8px 4px; border-radius:10px;">
+              <div style="font-size:0.65rem; color:var(--text-muted); font-weight:700;">CARBS</div>
+              <div id="sum-total-carbs" style="font-weight:800; font-size:0.95rem; color:var(--carb-blue);">0g</div>
+            </div>
+            <div style="background:#f4f9f2; padding:8px 4px; border-radius:10px;">
+              <div style="font-size:0.65rem; color:var(--text-muted); font-weight:700;">PROTEIN</div>
+              <div id="sum-total-protein" style="font-weight:800; font-size:0.95rem; color:var(--protein-maroon);">0g</div>
+            </div>
+            <div style="background:#f4f9f2; padding:8px 4px; border-radius:10px;">
+              <div style="font-size:0.65rem; color:var(--text-muted); font-weight:700;">FAT</div>
+              <div id="sum-total-fat" style="font-weight:800; font-size:0.95rem; color:var(--fat-orange);">0g</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-section-card" style="margin-bottom:16px;">
+          <div class="profile-section-title">Daily Breakdown (Mon &ndash; Sun)</div>
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Cal</th>
+                <th>Carb</th>
+                <th>Prot</th>
+                <th>Fat</th>
+              </tr>
+            </thead>
+            <tbody id="summary-table-body"></tbody>
+          </table>
+        </div>
+
+        <button type="button" class="btn-primary-green" id="btn-ai-weekly-insight" style="margin-bottom:20px;">
+          ✨ Generate AI Weekly Health Insight
+        </button>
+        <div id="ai-insight-box" class="profile-section-card hidden" style="background:#f2f8ef; border:1px solid #cce2c7;">
+          <div style="font-weight:800; color:var(--primary-green); margin-bottom:6px;">Dietitian Feedback</div>
+          <p id="ai-insight-text" style="font-size:0.88rem; line-height:1.45;"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         SUBPAGE: MOOD TRACKER
+         ==================================================================== -->
+    <div id="subpage-tracker-mood" class="zen-subpage">
+      <div class="subpage-top-bar">
+        <button class="back-btn btn-close-subpage">&#8592;</button>
+        <h2 class="subpage-title">Mood</h2>
+        <div style="width:36px;"></div>
+      </div>
+
+      <div style="padding:0 16px;">
+        <div class="profile-section-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="profile-section-title" style="margin:0;">How are you feeling today?</div>
+            <div style="font-size:0.85rem; font-weight:700; color:var(--primary-green);">Today</div>
+          </div>
+
+          <div class="emoji-faces-row">
+            <button type="button" class="emoji-face-btn" data-mood="1" title="Terrible">😫</button>
+            <button type="button" class="emoji-face-btn" data-mood="2" title="Low">🙁</button>
+            <button type="button" class="emoji-face-btn" data-mood="3" title="Okay">😐</button>
+            <button type="button" class="emoji-face-btn" data-mood="4" title="Good">🙂</button>
+            <button type="button" class="emoji-face-btn" data-mood="5" title="Awesome">😁</button>
+          </div>
+
+          <div class="input-field-group">
+            <label class="input-field-label">Note (optional)</label>
+            <input type="text" id="mood-note-input" class="pill-input" placeholder="Good workout, felt energetic">
+          </div>
+
+          <div class="tag-chips-wrap" id="mood-tags-container">
+            <button type="button" class="tag-chip-btn" data-tag="Energetic">Energetic</button>
+            <button type="button" class="tag-chip-btn" data-tag="Happy">Happy</button>
+            <button type="button" class="tag-chip-btn" data-tag="Calm">Calm</button>
+            <button type="button" class="tag-chip-btn" data-tag="Motivated">Motivated</button>
+            <button type="button" class="tag-chip-btn" data-tag="Stressed">Stressed</button>
+            <button type="button" class="tag-chip-btn" data-tag="Tired">Tired</button>
+            <button type="button" class="tag-chip-btn" data-tag="Anxious">Anxious</button>
+            <button type="button" class="tag-chip-btn" data-tag="Hungry">Hungry</button>
+          </div>
+
+          <button type="button" class="btn-primary-green mt-2" id="btn-save-mood" disabled style="opacity:0.5;">
+            Save
+          </button>
+          <div id="mood-hint-text" style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:6px;">Pick a face to save.</div>
+        </div>
+
+        <div class="profile-section-card">
+          <div class="profile-section-title">Mood Logged Days</div>
+          <div style="display:flex; justify-content:space-around; text-align:center; margin-top:14px;">
+            <div>
+              <div style="font-size:1.8rem;">🙂</div>
+              <div style="font-weight:800; font-size:1.2rem; color:var(--primary-green);" id="mood-count-good">0</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">Good</div>
+            </div>
+            <div>
+              <div style="font-size:1.8rem;">😐</div>
+              <div style="font-weight:800; font-size:1.2rem; color:#b45309;" id="mood-count-okay">0</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">Okay</div>
+            </div>
+            <div>
+              <div style="font-size:1.8rem;">🙁</div>
+              <div style="font-weight:800; font-size:1.2rem; color:var(--danger-red);" id="mood-count-low">0</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">Low</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         SUBPAGE: FASTING TRACKER
+         ==================================================================== -->
+    <div id="subpage-tracker-fasting" class="zen-subpage">
+      <div class="subpage-top-bar">
+        <button class="back-btn btn-close-subpage">&#8592;</button>
+        <h2 class="subpage-title">Intermittent Fasting</h2>
+        <div style="width:36px;"></div>
+      </div>
+
+      <div style="padding:0 16px;">
+        <div class="fasting-presets-row" id="fasting-presets">
+          <button type="button" class="fasting-preset-pill" data-hours="12">12:12</button>
+          <button type="button" class="fasting-preset-pill" data-hours="14">14:10</button>
+          <button type="button" class="fasting-preset-pill active" data-hours="16">16:8</button>
+          <button type="button" class="fasting-preset-pill" data-hours="18">18:6</button>
+        </div>
+
+        <div class="fasting-timer-card">
+          <div style="font-size:0.85rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;" id="fasting-status-label">FASTING IN PROGRESS</div>
+          <div class="fasting-timer-time" id="fasting-timer-display">14:22:08</div>
+          <div style="font-size:0.85rem; color:var(--text-muted);" id="fasting-sub-target">Goal: 16 hours</div>
+          <button type="button" class="btn-primary-green mt-3" id="btn-toggle-fast">
+            End Fast
+          </button>
+        </div>
+
+        <div class="profile-section-card">
+          <div class="profile-section-title">Health Disclaimer</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.45;">
+            Intermittent fasting helps regulate insulin levels and autophagy. Stay hydrated by drinking water during your fast. Consult a medical professional if you have underlying conditions.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         SUBPAGE: SLEEP TRACKER
+         ==================================================================== -->
+    <div id="subpage-tracker-sleep" class="zen-subpage">
+      <div class="subpage-top-bar">
+        <button class="back-btn btn-close-subpage">&#8592;</button>
+        <h2 class="subpage-title">Sleep Tracker</h2>
+        <div style="width:36px;"></div>
+      </div>
+
+      <div style="padding:0 16px;">
+        <div class="profile-section-card">
+          <div class="profile-section-title">Log Last Night's Sleep</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+            <div class="input-field-group">
+              <label class="input-field-label">Bed Time</label>
+              <input type="time" id="sleep-bed-time" class="pill-input" value="23:00">
+            </div>
+            <div class="input-field-group">
+              <label class="input-field-label">Wake Time</label>
+              <input type="time" id="sleep-wake-time" class="pill-input" value="07:30">
+            </div>
+          </div>
+
+          <div style="text-align:center; margin:14px 0; background:#f4f9f2; border-radius:14px; padding:12px;">
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">TOTAL SLEEP DURATION</div>
+            <div id="sleep-duration-calc" style="font-size:1.8rem; font-weight:800; color:var(--primary-green);">8h 30m</div>
+          </div>
+
+          <button type="button" class="btn-primary-green" id="btn-save-sleep">
+            Save Sleep
+          </button>
+        </div>
+
+        <div class="profile-section-card">
+          <div class="profile-section-title">Sleep Guidelines</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.45;">
+            Adults generally need 7 to 9 hours of restorative sleep each night for muscle recovery, cognitive clarity, and metabolic health.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         SUBPAGE: WEIGHT TRACKER
+         ==================================================================== -->
+    <div id="subpage-tracker-weight" class="zen-subpage">
+      <div class="subpage-top-bar">
+        <button class="back-btn btn-close-subpage">&#8592;</button>
+        <h2 class="subpage-title">Weight Tracker</h2>
+        <div style="width:36px;"></div>
+      </div>
+
+      <div style="padding:0 16px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+          <div class="profile-section-card" style="margin:0; text-align:center;">
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">CURRENT</div>
+            <div id="weight-display-current" style="font-size:1.8rem; font-weight:800; color:var(--primary-green); margin-top:4px;">65.0 kg</div>
+          </div>
+          <div class="profile-section-card" style="margin:0; text-align:center;">
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">TARGET</div>
+            <div id="weight-display-target" style="font-size:1.8rem; font-weight:800; color:#0284c7; margin-top:4px;">60.0 kg</div>
+          </div>
+        </div>
+
+        <div class="profile-section-card">
+          <div class="profile-section-title">Log New Weight</div>
+          <div class="input-field-group">
+            <label class="input-field-label">Weight</label>
+            <input type="number" id="input-new-weight-val" class="pill-input" placeholder="65.0" step="0.1">
+          </div>
+          <button type="button" class="btn-primary-green mt-2" id="btn-save-weight-entry">
+            + Save Weight
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         SUBPAGE: ADDRESS
+         ==================================================================== -->
+    <div id="subpage-address" class="zen-subpage">
+      <div class="subpage-top-bar">
+        <button class="back-btn btn-close-subpage">&#8592;</button>
+        <h2 class="subpage-title">Add Address</h2>
+        <div style="width:36px;"></div>
+      </div>
+
+      <div style="padding:0 16px;">
+        <div class="profile-section-card">
+          <button type="button" class="btn-primary-green" id="btn-use-current-location" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span>📍</span>
+            <span>Use Current Location</span>
+          </button>
+          <div id="location-spinner" class="text-center mt-2 hidden" style="font-size:0.85rem; color:var(--primary-green); font-weight:700;">
+            Resolving address from GPS...
+          </div>
+        </div>
+
+        <div class="profile-section-card">
+          <div class="profile-section-title">Address Details</div>
+          <div class="input-field-group">
+            <label class="input-field-label">Street / Area</label>
+            <input type="text" id="addr-street" class="pill-input" placeholder="123 Main Road">
+          </div>
+          <div class="input-field-group">
+            <label class="input-field-label">City</label>
+            <input type="text" id="addr-city" class="pill-input" placeholder="Pune">
+          </div>
+          <div class="input-field-group">
+            <label class="input-field-label">State / Country</label>
+            <input type="text" id="addr-state" class="pill-input" placeholder="Maharashtra, India">
+          </div>
+          <button type="button" class="btn-primary-green mt-2" id="btn-save-address">
+            Save Address to Profile
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         9. SUBPAGE: SETTINGS & PREFERENCES
+         ==================================================================== -->
+    <div id="subpage-settings" class="zen-subpage">
+      <div class="subpage-top-bar">
+        <button class="back-btn btn-close-subpage">&#8592;</button>
+        <h2 class="subpage-title">Settings</h2>
+        <div style="width:36px;"></div>
+      </div>
+
+      <div style="padding:0 16px;">
+        <!-- 1. User Header Card -->
+        <div class="profile-section-card" style="display:flex; align-items:center; gap:14px;">
+          <div style="width:50px; height:50px; border-radius:50%; background:var(--primary-green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.4rem; font-weight:800;">
+            K
+          </div>
+          <div>
+            <h3 style="font-size:1.05rem; font-weight:800;" id="settings-user-name">Krishna Deshmukh</h3>
+            <p style="font-size:0.8rem; color:var(--text-muted);" id="settings-user-email">krishnadeshmukh721@gmail.com</p>
+          </div>
+        </div>
+
+        <!-- 2. Portfolio / Premium Banner -->
+        <div class="profile-section-card" style="background:#f0f7ec; border:1px solid #dbead5;">
+          <div style="font-size:0.95rem; font-weight:800; color:var(--primary-green);">⚡ Unlimited Personal Pro</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:4px;">
+            Built by <strong>Krishna Deshmukh</strong>. Unlimited multimodal AI food vision & workout logging enabled.
+          </p>
+        </div>
+
+        <!-- 3. Navigation Links -->
+        <div class="profile-section-card" style="padding:4px 0;">
+          <div class="drawer-nav-item" style="border-radius:0; border-bottom:1px solid #f0f5ee;" onclick="openSubpage('subpage-profile')">
+            <span class="icon">👤</span>
+            <span>My Profile & MSJ Goals</span>
+          </div>
+          <div class="drawer-nav-item" style="border-radius:0; border-bottom:1px solid #f0f5ee;" onclick="openSubpage('subpage-address')">
+            <span class="icon">📍</span>
+            <span>Add Address (GPS Location)</span>
+          </div>
+          <div class="drawer-nav-item" style="border-radius:0;" onclick="openSubpage('subpage-reminders')">
+            <span class="icon">🔔</span>
+            <span>Meal Reminders</span>
+          </div>
+        </div>
+
+        <!-- 4. Unit Preferences -->
+        <div class="profile-section-card">
+          <div class="profile-section-title">Unit Preferences</div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span style="font-size:0.9rem; font-weight:600;">Liquid Measurement</span>
+            <div class="unit-toggle-pill" id="setting-liquid-toggle">
+              <button type="button" class="unit-toggle-btn active" data-unit="glasses">Glasses</button>
+              <button type="button" class="unit-toggle-btn" data-unit="ml">ml</button>
+              <button type="button" class="unit-toggle-btn" data-unit="oz">oz</button>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span style="font-size:0.9rem; font-weight:600;">Weight Measurement</span>
+            <div class="unit-toggle-pill" id="setting-weight-toggle">
+              <button type="button" class="unit-toggle-btn active" data-unit="kg">kg</button>
+              <button type="button" class="unit-toggle-btn" data-unit="lb">lb</button>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.9rem; font-weight:600;">First Day of Week</span>
+            <div class="unit-toggle-pill" id="setting-firstday-toggle">
+              <button type="button" class="unit-toggle-btn active" data-day="monday">Monday</button>
+              <button type="button" class="unit-toggle-btn" data-day="sunday">Sunday</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Gemini API Key Card -->
+        <div class="profile-section-card">
+          <div class="profile-section-title">Google Gemini AI Engine</div>
+          <div class="input-field-group">
+            <label class="input-field-label">Gemini API Key</label>
+            <input type="password" id="input-settings-gemini-key" class="sage-pill-input" placeholder="AIzaSy...">
+          </div>
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button type="button" class="btn-primary-green" id="btn-save-gemini-key-settings" style="flex:1; padding:10px;">Save Key</button>
+            <button type="button" class="btn-primary-green" id="btn-test-gemini-key-settings" style="flex:1; padding:10px; background:#e4f1dc; color:var(--primary-green); box-shadow:none;">Test Key</button>
+          </div>
+          <div id="status-gemini-test" style="font-size:0.8rem; margin-top:8px; text-align:center;"></div>
+        </div>
+
+        <!-- 6. Data Backup & Export (JSON & CSV) -->
+        <div class="profile-section-card">
+          <div class="profile-section-title">Data Backup & Export</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:12px;">Export or restore your health and meal records.</p>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn-primary-green" id="btn-export-backup" style="flex:1; padding:10px; background:#f0f7ec; color:var(--primary-green); box-shadow:none;">Export JSON</button>
+              <button type="button" class="btn-primary-green" id="btn-export-csv" style="flex:1; padding:10px; background:#f0f7ec; color:var(--primary-green); box-shadow:none;">Export CSV</button>
+            </div>
+            <button type="button" class="btn-primary-green" id="btn-import-trigger" style="padding:10px; background:#f0f7ec; color:var(--primary-green); box-shadow:none;">Import JSON</button>
+            <input type="file" id="input-import-backup" accept=".json" class="hidden">
+          </div>
+        </div>
+
+        <!-- 7. Logout & Delete Account -->
+        <div style="display:flex; flex-direction:column; gap:10px; margin:16px 0;">
+          <button class="btn-primary-green" id="btn-settings-logout" style="background:#ffffff; color:var(--danger-red); border:1.5px solid #fecaca; box-shadow:var(--shadow-sm);">
+            Log Out
+          </button>
+          <button class="btn-primary-green" id="btn-settings-delete-account" style="background:transparent; color:#991b1b; box-shadow:none; font-size:0.85rem;">
+            Delete Account & Purge Data
+          </button>
+        </div>
+
+        <!-- Version Label -->
+        <div style="text-align:center; font-size:0.75rem; color:var(--text-muted); margin-bottom:24px;">
+          Calorie Track v1.0.0 &bull; Built by Krishna Deshmukh
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ====================================================================
+         10. AI FOOD LOGGING MODAL (Bottom Sheet / Modal)
+         ==================================================================== -->
+    <div class="zen-modal-overlay" id="modal-ai-log">
+      <div class="zen-modal-dialog">
+        <div class="zen-modal-header">
+          <h3 class="zen-modal-title">Log Food with AI</h3>
+          <button class="back-btn" id="btn-close-ai-modal" style="font-size:1.2rem;">&times;</button>
+        </div>
+
+        <!-- Hidden photo inputs -->
+        <input type="file" id="file-camera" accept="image/*" capture="environment" class="hidden">
+        <input type="file" id="file-gallery" accept="image/*" class="hidden">
+
+        <!-- Image preview -->
+        <div id="ai-modal-img-preview-box" class="hidden" style="position:relative; margin-bottom:12px; border-radius:14px; overflow:hidden;">
+          <img id="ai-modal-img-preview" src="" style="width:100%; height:180px; object-fit:cover; display:block;">
+          <button type="button" id="btn-remove-ai-img" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer;">&times;</button>
+        </div>
+
+        <div class="input-field-group">
+          <label class="input-field-label">Describe Food or Indian Dish</label>
+          <textarea id="ai-modal-text-input" class="sage-pill-input" rows="3" style="border-radius:16px; font-weight:normal;"
+                    placeholder="e.g. 2 chapatis with dal makhani, paneer sabzi, and a small bowl of rice"></textarea>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:12px;">
+          <button type="button" class="btn-primary-green" id="btn-snap-photo" style="flex:1; padding:10px; background:#eef5ea; color:var(--primary-green); box-shadow:none;">
+            📷 Take Photo
+          </button>
+          <button type="button" class="btn-primary-green" id="btn-pick-gallery" style="flex:1; padding:10px; background:#eef5ea; color:var(--primary-green); box-shadow:none;">
+            🖼️ Gallery
+          </button>
+        </div>
+
+        <button type="button" class="btn-primary-green mt-3" id="btn-run-ai-analysis">
+          ✨ Analyze Nutrition with AI
+        </button>
+
+        <div id="ai-modal-spinner" class="text-center mt-3 hidden" style="color:var(--primary-green); font-weight:700;">
+          Analyzing calories & macros with Gemini...
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ====================================================================
+         11. PORTION REVIEW & SAVE MODAL
+         ==================================================================== -->
+    <div class="zen-modal-overlay" id="modal-portion-review">
+      <div class="zen-modal-dialog">
+        <div class="zen-modal-header">
+          <h3 class="zen-modal-title" id="review-dish-title">Detected Food</h3>
+          <span class="drawer-badge-pill" id="review-confidence-pill">High Confidence</span>
+        </div>
+
+        <p id="review-confidence-desc" style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:12px;"></p>
+
+        <div id="review-items-list" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+          <!-- Items with portion adjusters -->
+        </div>
+
+        <!-- Totals Card -->
+        <div class="sage-callout-box" style="margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-size:0.85rem; font-weight:700;">Total Calories:</span>
+            <span style="font-size:1.6rem; font-weight:800; color:#3f6c18;" id="review-total-cals">0 kcal</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:8px; text-align:center;">
+            <div style="background:#fff; border-radius:8px; padding:6px;">
+              <div style="font-size:0.65rem; color:var(--text-muted); font-weight:700;">CARBS</div>
+              <div style="font-weight:800; color:var(--accent-carb);" id="review-total-c">0g</div>
+            </div>
+            <div style="background:#fff; border-radius:8px; padding:6px;">
+              <div style="font-size:0.65rem; color:var(--text-muted); font-weight:700;">PROTEIN</div>
+              <div style="font-weight:800; color:var(--accent-protein);" id="review-total-p">0g</div>
+            </div>
+            <div style="background:#fff; border-radius:8px; padding:6px;">
+              <div style="font-size:0.65rem; color:var(--text-muted); font-weight:700;">FAT</div>
+              <div style="font-weight:800; color:var(--accent-fat);" id="review-total-f">0g</div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-primary-green" id="btn-confirm-save-meal">
+          Confirm & Save to Activity
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ====================================================================
+         12. FULL NUTRITION & MICRONUTRIENTS MODAL (% DV)
+         ==================================================================== -->
+    <div class="zen-modal-overlay" id="modal-full-nutrition">
+      <div class="zen-modal-dialog">
+        <div class="zen-modal-header">
+          <h3 class="zen-modal-title">Full Nutrition (% Daily Value)</h3>
+          <button class="back-btn" id="btn-close-nutrition-modal" style="font-size:1.2rem;">&times;</button>
+        </div>
+        <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:12px;">Based on standard WHO/FDA recommended daily intakes:</p>
+        <div id="full-nutrition-items-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; max-height:300px; overflow-y:auto; padding-right:4px;">
+          <!-- Dynamically populated -->
+        </div>
+        <button type="button" class="btn-primary-green mt-3" id="btn-dismiss-nutrition">Close</button>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         13. 3-DOT MEAL ACTIONS BOTTOM SHEET
+         ==================================================================== -->
+    <div id="sheet-meal-actions" class="bottom-sheet-backdrop">
+      <div class="bottom-sheet-modal">
+        <div class="bottom-sheet-handle"></div>
+        <h3 id="sheet-meal-title" style="font-size:1.15rem; font-weight:800; color:var(--text-dark); margin-bottom:14px;">Meal Options</h3>
+
+        <div class="sheet-action-list">
+          <button type="button" class="sheet-action-item" id="action-edit-meal">
+            <span>✏️</span>
+            <span>Edit Entry</span>
+          </button>
+          <button type="button" class="sheet-action-item" id="action-view-nutrition">
+            <span>🔍</span>
+            <span>View Full Nutrition</span>
+          </button>
+          <button type="button" class="sheet-action-item" id="action-save-prompt">
+            <span>🔖</span>
+            <span>Save as Quick Prompt</span>
+          </button>
+          <button type="button" class="sheet-action-item danger" id="action-delete-meal">
+            <span>🗑️</span>
+            <span>Delete Meal</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         14. EDIT MEAL MODAL
+         ==================================================================== -->
+    <div id="modal-edit-meal" class="sage-modal-overlay hidden">
+      <div class="sage-modal-card" style="max-width:360px;">
+        <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-dark); margin-bottom:12px;">Edit Meal</h3>
+        <div class="input-field-group">
+          <label class="input-field-label">Meal Name</label>
+          <input type="text" id="edit-meal-name" class="pill-input">
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="input-field-group">
+            <label class="input-field-label">Calories (kcal)</label>
+            <input type="number" id="edit-meal-cals" class="pill-input">
+          </div>
+          <div class="input-field-group">
+            <label class="input-field-label">Carbs (g)</label>
+            <input type="number" id="edit-meal-carbs" class="pill-input">
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="input-field-group">
+            <label class="input-field-label">Protein (g)</label>
+            <input type="number" id="edit-meal-protein" class="pill-input">
+          </div>
+          <div class="input-field-group">
+            <label class="input-field-label">Fat (g)</label>
+            <input type="number" id="edit-meal-fat" class="pill-input">
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:14px;">
+          <button type="button" id="btn-save-edit-meal" class="btn-primary-green" style="flex:1;">Save</button>
+          <button type="button" id="btn-cancel-edit-meal" class="btn-primary-green" style="flex:1; background:#f0f5ee; color:var(--text-muted); box-shadow:none;">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         15. SAVED PROMPTS BOTTOM SHEET
+         ==================================================================== -->
+    <div id="sheet-saved-prompts" class="bottom-sheet-backdrop">
+      <div class="bottom-sheet-modal">
+        <div class="bottom-sheet-handle"></div>
+        <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-dark); margin-bottom:14px;">🔖 Quick Log Favorite Foods</h3>
+        <div class="quick-prompts-grid">
+          <button type="button" class="quick-prompt-btn" data-text="2 Rotis with 100g Paneer Sabzi">
+            <span>🫓 2 Rotis with Paneer Sabzi</span>
+            <span style="color:var(--primary-green); font-size:0.8rem;">450 kcal</span>
+          </button>
+          <button type="button" class="quick-prompt-btn" data-text="1 Medium Banana">
+            <span>🍌 1 Medium Banana</span>
+            <span style="color:var(--primary-green); font-size:0.8rem;">105 kcal</span>
+          </button>
+          <button type="button" class="quick-prompt-btn" data-text="1 Cup Masala Chai with 2 Biscuits">
+            <span>☕ Masala Chai & 2 Biscuits</span>
+            <span style="color:var(--primary-green); font-size:0.8rem;">140 kcal</span>
+          </button>
+          <button type="button" class="quick-prompt-btn" data-text="1 Plate Dal Khichdi with Curd">
+            <span>🍲 Dal Khichdi with Curd</span>
+            <span style="color:var(--primary-green); font-size:0.8rem;">380 kcal</span>
+          </button>
+          <button type="button" class="quick-prompt-btn" data-text="1 Scoop Whey Protein in Water">
+            <span>🥤 Whey Protein Shake</span>
+            <span style="color:var(--primary-green); font-size:0.8rem;">130 kcal</span>
+          </button>
+          <button type="button" class="quick-prompt-btn" data-text="2 Boiled Eggs with Pinch of Pepper">
+            <span>🥚 2 Boiled Eggs</span>
+            <span style="color:var(--primary-green); font-size:0.8rem;">156 kcal</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Undo Delete Snackbar -->
+    <div id="undo-snackbar" class="undo-snackbar-toast hidden">
+      <span id="undo-snackbar-text">Meal deleted</span>
+      <button type="button" id="btn-undo-action" class="btn-undo-link">UNDO</button>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="zen-toast-container" id="zen-toast-container"></div>
+
+  </div>
+
+  <!-- Core JavaScript Module (Firebase v10 Modular SDK via CDN) -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
